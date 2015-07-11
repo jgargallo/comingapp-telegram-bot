@@ -65,7 +65,7 @@ class SendAction(Action):
 
 class SendMessageAction(SendAction):
     def __init__(self, generator, connector):
-        super().__init__(generator, connector)
+        super(SendMessageAction, self).__init__(generator, connector)
     def execute(self, update):
         message = self.generator.generate(update)
         optionals = self.generator.get_optionals()
@@ -75,7 +75,7 @@ class SendMessageAction(SendAction):
 
 class ForwardMessageAction(SendAction):
     def __init__(self, generator, connector):
-        super().__init__(generator, connector)
+        super(ForwardMessageAction, self).__init__(generator, connector)
     def execute(self, update):
         from_chat_id, message_id = self.generator.generate(update)
         optionals = self.generator.get_optionals()
@@ -86,7 +86,7 @@ class ForwardMessageAction(SendAction):
 
 class SendFileAction(SendAction):
     def __init__(self, generator, connector, is_id):
-        super().__init__(generator, connector)
+        super(SendFileAction, self).__init__(generator, connector)
         self.is_id = is_id
     def _get_kwargs(self, update, type_name):
         file_filename_or_id = self.generator.generate(update)
@@ -107,42 +107,42 @@ class SendFileAction(SendAction):
 
 class SendPhotoAction(SendFileAction):
     def __init__(self, generator, connector, is_id):
-        super().__init__(generator, connector, is_id)
+        super(SendPhotoAction, self).__init__(generator, connector, is_id)
     def execute(self, update):
         kwargs = self._get_kwargs(update, "photo")
         return self.connector.send_photo(update.chat.id, **kwargs)
 
 class SendAudioAction(SendFileAction):
     def __init__(self, generator, connector, is_id):
-        super().__init__(generator, connector, is_id)
+        super(SendAudioAction, self).__init__(generator, connector, is_id)
     def execute(self, update):
         kwargs = self._get_kwargs(update, "audio")
         return self.connector.send_audio(update.chat.id, **kwargs)
 
 class SendDocumentAction(SendFileAction):
     def __init__(self, generator, connector, is_id):
-        super().__init__(generator, connector, is_id)
+        super(SendDocumentAction, self).__init__(generator, connector, is_id)
     def execute(self, update):
         kwargs = self._get_kwargs(update, "document")
         return self.connector.send_document(update.chat.id, **kwargs)
 
 class SendStickerAction(SendFileAction):
     def __init__(self, generator, connector, is_id):
-        super().__init__(generator, connector, is_id)
+        super(SendStickerAction, self).__init__(generator, connector, is_id)
     def execute(self, update):
         kwargs = self._get_kwargs(update, "sticker")
         return self.connector.send_sticker(update.chat.id, **kwargs)
 
 class SendVideoAction(SendFileAction):
     def __init__(self, generator, connector, is_id):
-        super().__init__(generator, connector, is_id)
+        super(SendVideoAction, self).__init__(generator, connector, is_id)
     def execute(self, update):
         kwargs = self._get_kwargs(update, "video")
         return self.connector.send_video(update.chat.id, **kwargs)
 
 class SendLocationAction(SendAction):
     def __init__(self, generator, connector):
-        super().__init__(generator, connector)
+        super(SendLocationAction, self).__init__(generator, connector)
     def execute(self, update):
         latitude, longitude = self.generator.generate(update)
         optionals = self.generator.get_optionals()

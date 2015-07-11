@@ -53,14 +53,14 @@ class ComingBot(object):
 
                 self.session.commit()
 
-                return '\U0001F4C6 "{0}" created!'.format(event_name)
+                return u'\U0001F4C6 "{0}" created!'.format(event_name)
             except Exception as ex:
                 self.session.rollback()
                 logger.error('new cmd: {0}'.format(ex))
 
             return ""
         else:
-            return "Pick up a name: /new event_name"
+            return u"Pick up a name: /new event_name"
 
     def _attend(self, update, status):
         try:
@@ -116,18 +116,18 @@ class ComingBot(object):
     def _print_summary(self, event_name, attendant_name, summary):
         yes_str = no_str = maybe_str = nobody = ''
         if len(summary[1]) > 0:
-            yes_str = '\n\U0001F604 {0} coming:\n\U0001F44D {1}'.format(str(len(summary[1])), 
-                    '\n\U0001F44D '.join(summary[1]))
+            yes_str = u'\n\U0001F604 {0} coming:\n\U0001F44D {1}'.format(str(len(summary[1])), 
+                    u'\n\U0001F44D '.join(summary[1]))
         if len(summary[0]) > 0:
-            no_str = '\n\U0001F61E {0} not coming:\n\U0001F44E {1}'.format(str(len(summary[0])), 
-                    '\n\U0001F44E '.join(summary[0]))
+            no_str = u'\n\U0001F61E {0} not coming:\n\U0001F44E {1}'.format(str(len(summary[0])), 
+                    u'\n\U0001F44E '.join(summary[0]))
         if len(summary[2]) > 0:
-            maybe_str = '\n {0} maybe coming:\n\U0001F449 {1}'.format(str(len(summary[2])), 
-                    '\n\U0001F449 '.join(summary[2]))
+            maybe_str = u'\n {0} maybe coming:\n\U0001F449 {1}'.format(str(len(summary[2])), 
+                    u'\n\U0001F449 '.join(summary[2]))
         if len(summary[0]) == 0 and len(summary[1]) == 0 and len(summary[2]) == 0:
-            nobody = '\n\U0001F648 nobody answered yet'
+            nobody = u'\n\U0001F648 nobody answered yet'
 
-        return '\U0001F4C6 {0}{1}{2}{3}{4}' \
+        return u'\U0001F4C6 {0}{1}{2}{3}{4}' \
                 .format(event_name, yes_str, no_str, maybe_str, nobody)
 
     def yes_cmd(self, update):
