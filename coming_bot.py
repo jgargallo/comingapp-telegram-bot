@@ -132,13 +132,22 @@ class ComingBot(object):
 
     def yes_cmd(self, update):
         res = self._attend(update, 1)
-        return self._print_summary(res[0].name, res[1], res[2])
+        if not type(res) == str:
+            return self._print_summary(res[0].name, res[1], res[2])
+        else:
+            return res
     def no_cmd(self, update):
         res = self._attend(update, 0)
-        return self._print_summary(res[0].name, res[1], res[2])
+        if not type(res) == str:
+            return self._print_summary(res[0].name, res[1], res[2])
+        else:
+            return res
     def maybe_cmd(self, update):
         res = self._attend(update, 2)
-        return self._print_summary(res[0].name, res[1], res[2])
+        if not type(res) == str:
+            return self._print_summary(res[0].name, res[1], res[2])
+        else:
+            return res
     def who_cmd(self, update):
         chat, chat_ok = self._get_chat_tuple(update)
         if not chat_ok:
