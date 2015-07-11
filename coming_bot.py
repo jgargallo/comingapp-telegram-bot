@@ -3,6 +3,9 @@ from models import *
 from datetime import datetime
 from sqlalchemy import desc
 from collections import defaultdict
+import logging
+
+logger = logging.getLogger(__name__)
 
 def build_bot(session, apikey):
     coming_bot = ComingBot(session)
@@ -11,7 +14,7 @@ def build_bot(session, apikey):
         .send_message_when("yes", coming_bot.yes_cmd) \
         .send_message_when("no", coming_bot.no_cmd) \
         .send_message_when("maybe", coming_bot.maybe_cmd) \
-        .send_message_when("view", coming_bot.view_cmd) \
+        .send_message_when("who", coming_bot.who_cmd) \
         .build()
 
 class ComingBot(object):
@@ -25,6 +28,11 @@ class ComingBot(object):
         chat_id = int(update.chat.id)
         chat_name = update.chat.title
         chat = self.session.query(Chat).get(chat_id)
+
+        if not chat:
+            chat = Chat(id=chat_id, name=chat_name, created=datetime.now())
+            self.session.add(chat)
+
         return (chat, True)
 
     def _get_from_tuple(self, update):
@@ -40,18 +48,15 @@ class ComingBot(object):
                 if not chat_ok:
                     return 'Sorry! this is a group bot'
 
-                if not chat:
-                    chat = Chat(id=chat_id, name=chat_name, created=now)
-                    self.session.add(chat)
-
                 event = Event(name=event_name, chat=chat, created=now)
                 self.session.add(event)
 
                 self.session.commit()
 
-                return '"{0}" event created!'.format(event_name)
-            except Exception:
+                return '\U0001F4C6 "{0}" created!'.format(event_name)
+            except Exception as ex:
                 self.session.rollback()
+                logger.error('new cmd: {0}'.format(ex))
 
             return ""
         else:
@@ -109,15 +114,21 @@ class ComingBot(object):
         return summary
 
     def _print_summary(self, event_name, attendant_name, summary):
-        yes_str = no_str = maybe_str = ''
+        yes_str = no_str = maybe_str = nobody = ''
         if len(summary[1]) > 0:
-            yes_str = '\n\U0001F44D {0} coming:\n- {1}'.format(str(len(summary[1])), '\n- '.join(summary[1]))
+            yes_str = '\n\U0001F604 {0} coming:\n\U0001F44D {1}'.format(str(len(summary[1])), 
+                    '\n\U0001F44D '.join(summary[1]))
         if len(summary[0]) > 0:
-            no_str = '\n\U0001F44E {0} not coming:\n- {1}'.format(str(len(summary[0])), '\n- '.join(summary[0]))
+            no_str = '\n\U0001F61E {0} not coming:\n\U0001F44E {1}'.format(str(len(summary[0])), 
+                    '\n\U0001F44E '.join(summary[0]))
         if len(summary[2]) > 0:
-            maybe_str = '\n:point_right: {0} maybe coming:\n- {1}'.format(str(len(summary[2])), '\n- '.join(summary[2]))
-        return 'Who is coming to "{0}" event?{1}{2}{3}' \
-                .format(event_name, yes_str, no_str, maybe_str)
+            maybe_str = '\n {0} maybe coming:\n\U0001F449 {1}'.format(str(len(summary[2])), 
+                    '\n\U0001F449 '.join(summary[2]))
+        if len(summary[0]) == 0 and len(summary[1]) == 0 and len(summary[2]) == 0:
+            nobody = '\n\U0001F648 nobody answered yet'
+
+        return '\U0001F4C6 {0}{1}{2}{3}{4}' \
+                .format(event_name, yes_str, no_str, maybe_str, nobody)
 
     def yes_cmd(self, update):
         res = self._attend(update, 1)
@@ -128,7 +139,7 @@ class ComingBot(object):
     def maybe_cmd(self, update):
         res = self._attend(update, 2)
         return self._print_summary(res[0].name, res[1], res[2])
-    def view_cmd(self, update):
+    def who_cmd(self, update):
         chat, chat_ok = self._get_chat_tuple(update)
         if not chat_ok:
             return 'Sorry! this is a group bot'
