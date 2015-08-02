@@ -10,7 +10,7 @@ bot = None
 
 @app.route("/comingbot/{0}".format(settings.TG_API_KEY), methods=['GET', 'POST'])
 def post():
-    message = request.json.message
+    message = telegram.Update.de_json(request.json).message
     if message.text.startswith('/new'):
         bot.new_cmd(message)
 
