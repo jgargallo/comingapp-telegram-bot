@@ -15,6 +15,14 @@ def post():
     message = telegram.Update.de_json(body).message
     if message.text.startswith('/new'):
         bot.new_cmd(message)
+    elif message.text.startswith('/yes'):
+        bot.yes_cmd(message)
+    elif message.text.startswith('/no'):
+        bot.no_cmd(message)
+    elif message.text.startswith('/who'):
+        bot.who_cmd(message)
+    elif message.text.startswith('/maybe'):
+        bot.maybe_cmd(message)
     print body
     return json.dumps(body)
 
