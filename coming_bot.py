@@ -50,7 +50,7 @@ class ComingBot(object):
                 self.session.commit()
                 
                 self.bot.sendMessage(chat_id=update.chat.id, 
-                    text=u'\U0001F4C6 "{0}" created!'.format(event_name))
+                    text=u'\U0001F4C6 "{0}" created!'.format(event_name).encode('utf-8'))
             except Exception as ex:
                 self.session.rollback()
                 logger.error('new cmd: {0}'.format(ex))
@@ -109,7 +109,7 @@ class ComingBot(object):
 
         return summary
 
-    def _print_summary(self, event_name, attendant_name, summary):
+    def _print_summary(self, event_name, attendant_name, summary, chat_id):
         yes_str = no_str = maybe_str = nobody = ''
         if len(summary[1]) > 0:
             yes_str = u'\n\U0001F604 {0} coming:\n\U0001F44D {1}'.format(str(len(summary[1])), 
@@ -123,25 +123,26 @@ class ComingBot(object):
         if len(summary[0]) == 0 and len(summary[1]) == 0 and len(summary[2]) == 0:
             nobody = u'\n\U0001F648 nobody answered yet'
 
-        return u'\U0001F4C6 {0}{1}{2}{3}{4}' \
+        txt = u'\U0001F4C6 {0}{1}{2}{3}{4}' \
                 .format(event_name, yes_str, no_str, maybe_str, nobody)
+        self.bot.sendMessage(chat_id=chat_id, text=txt.encode('utf-8'))
 
     def yes_cmd(self, update):
         res = self._attend(update, 1)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2])
+            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
         else:
             return res
     def no_cmd(self, update):
         res = self._attend(update, 0)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2])
+            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
         else:
             return res
     def maybe_cmd(self, update):
         res = self._attend(update, 2)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2])
+            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
         else:
             return res
     def who_cmd(self, update):
@@ -156,4 +157,4 @@ class ComingBot(object):
             return 'Sorry, there is no event to attend, create one: "/new event_name"'
 
         summary = self._get_summary(event)
-        return self._print_summary(event.name, None, summary)
+        return self._print_summary(event.name, None, summary, update.chat.id)
