@@ -1,26 +1,22 @@
-import telegram.botapi.botbuilder as botbuilder
 from models import *
 from datetime import datetime
 from sqlalchemy import desc
 from collections import defaultdict
 import logging
+import telegram
 
 logger = logging.getLogger(__name__)
 
 def build_bot(session, apikey):
-    coming_bot = ComingBot(session)
-    return botbuilder.BotBuilder(apikey) \
-        .send_message_when("new", coming_bot.new_cmd) \
-        .send_message_when("yes", coming_bot.yes_cmd) \
-        .send_message_when("no", coming_bot.no_cmd) \
-        .send_message_when("maybe", coming_bot.maybe_cmd) \
-        .send_message_when("who", coming_bot.who_cmd) \
-        .build()
+    bot = telegram.Bot(apikey)
+    bot.setWebhook('https://golean.do/comingbot/{0}'.format(apikey))
+    return ComingBot(session, bot)
 
 class ComingBot(object):
 
-    def __init__(self, session):
+    def __init__(self, session, bot):
         self.session = session
+        self.bot = bot
 
     def _get_chat_tuple(self, update):
         if not hasattr(update, 'chat'):
