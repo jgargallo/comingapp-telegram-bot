@@ -1,6 +1,7 @@
 from flask import Flask, request
 
 import settings
+import json
 from utils import db
 import telegram
 from coming_bot import build_bot
@@ -10,9 +11,12 @@ bot = None
 
 @app.route("/comingbot/{0}".format(settings.TG_API_KEY), methods=['GET', 'POST'])
 def post():
-    message = telegram.Update.de_json(request.json).message
+    body = request.json
+    message = telegram.Update.de_json(body).message
     if message.text.startswith('/new'):
         bot.new_cmd(message)
+    print body
+    return json.dumps(body)
 
 if __name__ == "__main__":
     session = db.load_session(settings.MYSQL_ENGINE)
