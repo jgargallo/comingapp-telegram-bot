@@ -10,8 +10,9 @@ bot = None
 
 @app.route("/comingbot/{0}".format(settings.TG_API_KEY), methods=['GET', 'POST'])
 def post():
-    print request.get_data()
-    return "Hello World!"
+    message = request.json.message
+    if message.text.startswith('/new'):
+        bot.new_cmd(message)
 
 if __name__ == "__main__":
     session = db.load_session(settings.MYSQL_ENGINE)

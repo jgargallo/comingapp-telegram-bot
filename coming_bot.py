@@ -48,15 +48,15 @@ class ComingBot(object):
                 self.session.add(event)
 
                 self.session.commit()
-
-                return u'\U0001F4C6 "{0}" created!'.format(event_name)
+                
+                self.bot.sendMessage(chat_id=update.chat.id, 
+                    text=u'\U0001F4C6 "{0}" created!'.format(event_name))
             except Exception as ex:
                 self.session.rollback()
                 logger.error('new cmd: {0}'.format(ex))
-
-            return ""
         else:
-            return u"Pick up a name: /new event_name"
+            self.bot.sendMessage(chat_id=update.chat.id, 
+                    text=u"Pick up a name: /new event_name")
 
     def _attend(self, update, status):
         try:
