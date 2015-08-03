@@ -29,3 +29,7 @@ if __name__ == "__main__":
     session = db.load_session(settings.MYSQL_ENGINE)
     bot = build_bot(session, settings.TG_API_KEY)
     app.run()
+else:
+    session = db.load_session(settings.MYSQL_ENGINE)
+    bot = build_bot(session, settings.TG_API_KEY)
+    app.run()
