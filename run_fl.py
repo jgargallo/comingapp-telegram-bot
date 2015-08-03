@@ -23,7 +23,6 @@ def post():
         bot.who_cmd(message)
     elif message.text.startswith('/maybe'):
         bot.maybe_cmd(message)
-    print body
     return json.dumps(body)
 
 if __name__ == "__main__":
