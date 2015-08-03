@@ -32,7 +32,7 @@ class ComingBot(object):
         return (chat, True)
 
     def _get_from_tuple(self, update):
-        fr = getattr(update, 'from')
+        fr = update.from_user
         return (fr.id, fr.first_name)
 
     def new_cmd(self, update):
