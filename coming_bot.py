@@ -118,7 +118,7 @@ class ComingBot(object):
             no_str = u'\n\U0001F61E {0} not coming:\n\U0001F44E {1}'.format(str(len(summary[0])), 
                     u'\n\U0001F44E '.join(summary[0]))
         if len(summary[2]) > 0:
-            maybe_str = u'\n {0} maybe coming:\n\U0001F449 {1}'.format(str(len(summary[2])), 
+            maybe_str = u'\n\U0001F614 {0} maybe coming:\n\U0001F449 {1}'.format(str(len(summary[2])), 
                     u'\n\U0001F449 '.join(summary[2]))
         if len(summary[0]) == 0 and len(summary[1]) == 0 and len(summary[2]) == 0:
             nobody = u'\n\U0001F648 nobody answered yet'
