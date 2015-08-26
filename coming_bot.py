@@ -112,13 +112,13 @@ class ComingBot(object):
     def _print_summary(self, event_name, attendant_name, summary, chat_id):
         yes_str = no_str = maybe_str = nobody = ''
         if len(summary[1]) > 0:
-            yes_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F604 {0} coming:\n\U0001F44D {1}'.format(str(len(summary[1])), 
+            yes_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F604 {0} coming:\n.  \U0001F44D {1}'.format(str(len(summary[1])), 
                     u'\n   \U0001F44D '.join(summary[1]))
         if len(summary[0]) > 0:
-            no_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F61E {0} not coming:\n\U0001F44E {1}'.format(str(len(summary[0])), 
+            no_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F61E {0} not coming:\n   \U0001F44E {1}'.format(str(len(summary[0])), 
                     u'\n   \U0001F44E '.join(summary[0]))
         if len(summary[2]) > 0:
-            maybe_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F614 {0} maybe coming:\n\U0001F449 {1}'.format(str(len(summary[2])), 
+            maybe_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F614 {0} maybe coming:\n   \U0001F449 {1}'.format(str(len(summary[2])), 
                     u'\n   \U0001F449 '.join(summary[2]))
         if len(summary[0]) == 0 and len(summary[1]) == 0 and len(summary[2]) == 0:
             nobody = u'\n\U0001F648 nobody answered yet'
