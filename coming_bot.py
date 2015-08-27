@@ -1,26 +1,22 @@
-import telegram.botapi.botbuilder as botbuilder
 from models import *
 from datetime import datetime
 from sqlalchemy import desc
 from collections import defaultdict
 import logging
+import telegram
 
 logger = logging.getLogger(__name__)
 
 def build_bot(session, apikey):
-    coming_bot = ComingBot(session)
-    return botbuilder.BotBuilder(apikey) \
-        .send_message_when("new", coming_bot.new_cmd) \
-        .send_message_when("yes", coming_bot.yes_cmd) \
-        .send_message_when("no", coming_bot.no_cmd) \
-        .send_message_when("maybe", coming_bot.maybe_cmd) \
-        .send_message_when("who", coming_bot.who_cmd) \
-        .build()
+    bot = telegram.Bot(apikey)
+    bot.setWebhook('https://golean.do/comingbot/{0}'.format(apikey))
+    return ComingBot(session, bot)
 
 class ComingBot(object):
 
-    def __init__(self, session):
+    def __init__(self, session, bot):
         self.session = session
+        self.bot = bot
 
     def _get_chat_tuple(self, update):
         if not hasattr(update, 'chat'):
@@ -36,7 +32,7 @@ class ComingBot(object):
         return (chat, True)
 
     def _get_from_tuple(self, update):
-        fr = getattr(update, 'from')
+        fr = update.from_user
         return (fr.id, fr.first_name)
 
     def new_cmd(self, update):
@@ -52,15 +48,15 @@ class ComingBot(object):
                 self.session.add(event)
 
                 self.session.commit()
-
-                return u'\U0001F4C6 "{0}" created!'.format(event_name)
+                
+                self.bot.sendMessage(chat_id=update.chat.id, 
+                    text=u'\U0001F4C6 "{0}" created!'.format(event_name).encode('utf-8'))
             except Exception as ex:
                 self.session.rollback()
                 logger.error('new cmd: {0}'.format(ex))
-
-            return ""
         else:
-            return u"Pick up a name: /new event_name"
+            self.bot.sendMessage(chat_id=update.chat.id, 
+                    text=u"Pick up a name: /new event_name")
 
     def _attend(self, update, status):
         try:
@@ -113,39 +109,40 @@ class ComingBot(object):
 
         return summary
 
-    def _print_summary(self, event_name, attendant_name, summary):
+    def _print_summary(self, event_name, attendant_name, summary, chat_id):
         yes_str = no_str = maybe_str = nobody = ''
         if len(summary[1]) > 0:
-            yes_str = u'\n\U0001F604 {0} coming:\n\U0001F44D {1}'.format(str(len(summary[1])), 
-                    u'\n\U0001F44D '.join(summary[1]))
+            yes_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F604 {0} coming:\n   \U0001F44D {1}'.format(str(len(summary[1])), 
+                    u'\n   \U0001F44D '.join(summary[1]))
         if len(summary[0]) > 0:
-            no_str = u'\n\U0001F61E {0} not coming:\n\U0001F44E {1}'.format(str(len(summary[0])), 
-                    u'\n\U0001F44E '.join(summary[0]))
+            no_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F61E {0} not coming:\n   \U0001F44E {1}'.format(str(len(summary[0])), 
+                    u'\n   \U0001F44E '.join(summary[0]))
         if len(summary[2]) > 0:
-            maybe_str = u'\n {0} maybe coming:\n\U0001F449 {1}'.format(str(len(summary[2])), 
-                    u'\n\U0001F449 '.join(summary[2]))
+            maybe_str = u'\n\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\U00003030\n\U0001F614 {0} maybe coming:\n   \U0001F449 {1}'.format(str(len(summary[2])), 
+                    u'\n   \U0001F449 '.join(summary[2]))
         if len(summary[0]) == 0 and len(summary[1]) == 0 and len(summary[2]) == 0:
             nobody = u'\n\U0001F648 nobody answered yet'
 
-        return u'\U0001F4C6 {0}{1}{2}{3}{4}' \
+        txt = u'\U0001F4C6 {0}{1}{2}{3}{4}' \
                 .format(event_name, yes_str, no_str, maybe_str, nobody)
+        self.bot.sendMessage(chat_id=chat_id, text=txt.encode('utf-8'))
 
     def yes_cmd(self, update):
         res = self._attend(update, 1)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2])
+            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
         else:
             return res
     def no_cmd(self, update):
         res = self._attend(update, 0)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2])
+            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
         else:
             return res
     def maybe_cmd(self, update):
         res = self._attend(update, 2)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2])
+            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
         else:
             return res
     def who_cmd(self, update):
@@ -160,4 +157,4 @@ class ComingBot(object):
             return 'Sorry, there is no event to attend, create one: "/new event_name"'
 
         summary = self._get_summary(event)
-        return self._print_summary(event.name, None, summary)
+        return self._print_summary(event.name, None, summary, update.chat.id)
