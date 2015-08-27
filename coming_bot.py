@@ -4,6 +4,7 @@ from sqlalchemy import desc
 from collections import defaultdict
 import logging
 import telegram
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,10 @@ def build_bot(session, apikey):
     return ComingBot(session, bot)
 
 class ComingBot(object):
+
+    yes_responses = (u'ok', u'nice', u'okay', u'cool', u'alright', u'yeah', u'see you there',)
+    no_responses = (u'next time', u'oops', u'ouch',)
+    maybe_responses = (u'no hurries', u'take your time',)
 
     def __init__(self, session, bot):
         self.session = session
@@ -134,19 +139,25 @@ class ComingBot(object):
     def yes_cmd(self, update):
         res = self._attend(update, 1)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
+            #return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
+            self.bot.sendMessage(chat_id=update.chat.id, 
+                    text=yes_responses[random.randrange(len(yes_responses))].encode('utf-8'))
         else:
             return res
     def no_cmd(self, update):
         res = self._attend(update, 0)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
+            #return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
+            self.bot.sendMessage(chat_id=update.chat.id, 
+                    text=no_responses[random.randrange(len(no_responses))].encode('utf-8'))
         else:
             return res
     def maybe_cmd(self, update):
         res = self._attend(update, 2)
         if not type(res) == str:
-            return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
+            #return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
+            self.bot.sendMessage(chat_id=update.chat.id, 
+                    text=maybe_responses[random.randrange(len(maybe_responses))].encode('utf-8'))
         else:
             return res
     def who_cmd(self, update):
