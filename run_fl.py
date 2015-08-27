@@ -13,17 +13,18 @@ bot = None
 def post():
     body = request.json
     message = telegram.Update.de_json(body).message
-    cmd = message.text.lower()
-    if cmd.startswith('/new'):
-        bot.new_cmd(message)
-    elif cmd.startswith('/yes'):
-        bot.yes_cmd(message)
-    elif cmd.startswith('/no'):
-        bot.no_cmd(message)
-    elif cmd.startswith('/who'):
-        bot.who_cmd(message)
-    elif cmd.startswith('/maybe'):
-        bot.maybe_cmd(message)
+    if message and message.text is not None:
+        cmd = message.text.lower()
+        if cmd.startswith('/new'):
+            bot.new_cmd(message)
+        elif cmd.startswith('/yes'):
+            bot.yes_cmd(message)
+        elif cmd.startswith('/no'):
+            bot.no_cmd(message)
+        elif cmd.startswith('/who'):
+            bot.who_cmd(message)
+        elif cmd.startswith('/maybe'):
+            bot.maybe_cmd(message)
     return json.dumps(body)
 
 if __name__ == "__main__":
