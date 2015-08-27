@@ -74,11 +74,15 @@ class ComingBot(object):
             fr = self._get_from_tuple(update)
 
             attendant = self.session.query(Attendant).get(fr[0])
+            name = fr[1].replace('\n',' ')
             event_attendant = None
             if not attendant:
-                attendant = Attendant(id=fr[0], name=fr[1].replace('\n',' '), created=now)
+                attendant = Attendant(id=fr[0], name=name, created=now)
                 self.session.add(attendant)
             else:
+                if name != attendant.name:
+                    attendant.name = name
+                    self.session.add(attendant)
                 event_attendant = self.session.query(EventAttendant) \
                         .filter_by(event_id=event.id, attendant_id=attendant.id) \
                         .first()
