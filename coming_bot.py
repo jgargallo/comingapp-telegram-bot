@@ -141,7 +141,7 @@ class ComingBot(object):
         if not type(res) == str:
             #return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
             self.bot.sendMessage(chat_id=update.chat.id, 
-                    text=yes_responses[random.randrange(len(yes_responses))].encode('utf-8'))
+                    text=self.yes_responses[random.randrange(len(self.yes_responses))].encode('utf-8'))
         else:
             return res
     def no_cmd(self, update):
@@ -149,7 +149,7 @@ class ComingBot(object):
         if not type(res) == str:
             #return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
             self.bot.sendMessage(chat_id=update.chat.id, 
-                    text=no_responses[random.randrange(len(no_responses))].encode('utf-8'))
+                    text=self.no_responses[random.randrange(len(self.no_responses))].encode('utf-8'))
         else:
             return res
     def maybe_cmd(self, update):
@@ -157,7 +157,7 @@ class ComingBot(object):
         if not type(res) == str:
             #return self._print_summary(res[0].name, res[1], res[2], update.chat.id)
             self.bot.sendMessage(chat_id=update.chat.id, 
-                    text=maybe_responses[random.randrange(len(maybe_responses))].encode('utf-8'))
+                    text=self.maybe_responses[random.randrange(len(self.maybe_responses))].encode('utf-8'))
         else:
             return res
     def who_cmd(self, update):
